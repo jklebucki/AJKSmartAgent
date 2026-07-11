@@ -1,0 +1,4 @@
+interface:
+  display_name: "Diagnostyka .NET 10"
+  short_description: "Ustalanie przyczyn awarii bez zgadywania"
+  default_prompt: "Użyj $dotnet10-diagnose-failure, aby znaleźć przyczynę awarii builda, testu lub runtime."

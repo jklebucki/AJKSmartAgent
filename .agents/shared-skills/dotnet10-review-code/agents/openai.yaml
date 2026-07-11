@@ -1,0 +1,4 @@
+interface:
+  display_name: "Przegląd kodu .NET 10"
+  short_description: "Review poprawności, bezpieczeństwa i jakości"
+  default_prompt: "Użyj $dotnet10-review-code, aby wykonać evidence-based review zmiany w kodzie .NET 10."

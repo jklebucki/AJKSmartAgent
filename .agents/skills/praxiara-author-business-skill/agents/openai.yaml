@@ -1,0 +1,4 @@
+interface:
+  display_name: "Business skills Praxiary"
+  short_description: "Schema, YAML, recorder, runtime i replay"
+  default_prompt: "Użyj $praxiara-author-business-skill, aby utworzyć lub zmienić biznesowy skill Praxiary."

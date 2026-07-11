@@ -1,0 +1,109 @@
+skills:
+  dotnet10-implement-change:
+    positive:
+      - "Implement a new use case in this .NET 10 application."
+      - "Add behavior to an existing C# 14 service and verify it."
+      - "Create a complete ASP.NET Core feature from contract through tests."
+    negative:
+      - "Review this diff without changing any files."
+      - "Find the root cause of this failing test but do not fix it."
+      - "Split this class into smaller files without changing behavior."
+  dotnet10-refactor-safely:
+    positive:
+      - "Split AgentPorts.cs so every top-level type has its own file."
+      - "Remove duplicated business knowledge without changing public behavior."
+      - "Replace this inheritance hierarchy with composition while preserving contracts."
+    negative:
+      - "Add a new approval workflow feature."
+      - "Diagnose why the API returns HTTP 500."
+      - "Upgrade all NuGet dependencies."
+  dotnet10-write-tests:
+    positive:
+      - "Write deterministic xUnit v3 tests for this state transition."
+      - "Add an ASP.NET Core integration test for this endpoint."
+      - "Cover the cancellation and error boundaries of this async method."
+    negative:
+      - "Run the existing test suite and report the result."
+      - "Review whether the current tests are sufficient without editing them."
+      - "Implement a new domain operation."
+  dotnet10-diagnose-failure:
+    positive:
+      - "Determine why dotnet build fails after this change."
+      - "Find the root cause of this intermittent integration test failure."
+      - "Diagnose this .NET performance regression using evidence."
+    negative:
+      - "Apply the fix for the already diagnosed null reference."
+      - "Review this pull request for security issues."
+      - "Write tests for the corrected behavior."
+  dotnet10-review-code:
+    positive:
+      - "Review this .NET 10 diff for correctness and regressions."
+      - "Perform a read-only code review of this ASP.NET Core pull request."
+      - "Inspect this change for security, concurrency, and performance defects."
+    negative:
+      - "Implement all findings from the previous review."
+      - "Find why this worker crashes during startup."
+      - "Update the Npgsql package."
+  dotnet10-manage-dependencies:
+    positive:
+      - "Add a commercially usable NuGet package after license review."
+      - "Upgrade EF Core and assess transitive breaking changes."
+      - "Audit this solution for vulnerable or deprecated dependencies."
+    negative:
+      - "Implement a feature without adding packages."
+      - "Review a business logic diff that does not change dependencies."
+      - "Run the existing unit tests."
+  praxiara-evolve-api-contract:
+    positive:
+      - "Add a versioned REST endpoint to Praxiara.Api."
+      - "Change a SignalR task event and update its contract tests."
+      - "Evolve a public DTO and its OpenAPI representation safely."
+    negative:
+      - "Create an EF Core migration for an outbox table."
+      - "Change Playwright element observation behavior."
+      - "Modify only the React approval panel."
+  praxiara-evolve-persistence:
+    positive:
+      - "Add an EF Core entity mapping and migration for Praxiara."
+      - "Implement the transactional outbox write path."
+      - "Optimize this Npgsql query while preserving tenant isolation."
+    negative:
+      - "Change only an API response contract."
+      - "Add an ARIA locator to the Browser Worker."
+      - "Author an IFS business skill YAML file."
+  praxiara-change-browser-agent:
+    positive:
+      - "Implement isolated Playwright browser contexts for Praxiara tasks."
+      - "Change page revision handling and stale element references."
+      - "Add manual takeover leasing to the browser agent control loop."
+    negative:
+      - "Call an IFS Projection without browser fallback."
+      - "Change only the React browser preview layout."
+      - "Update an unrelated PostgreSQL backup profile."
+  praxiara-integrate-ifs:
+    positive:
+      - "Implement an IFS Projection client operation for customer invoices."
+      - "Route an IFS operation between OData and Playwright."
+      - "Add an execution profile for an Aurena Agent dependent process."
+    negative:
+      - "Automate a generic website unrelated to IFS."
+      - "Create a database migration for audit events."
+      - "Create a Codex development skill under .agents/skills."
+  praxiara-author-business-skill:
+    positive:
+      - "Create a versioned YAML workflow for resending an IFS invoice."
+      - "Extend the Praxiara business skill schema and recorder validation."
+      - "Add replay assertions and recovery rules to a business workflow."
+    negative:
+      - "Create a Codex SKILL.md for C# refactoring."
+      - "Add an ASP.NET Core endpoint."
+      - "Perform a read-only security audit of the agent."
+  praxiara-review-security:
+    positive:
+      - "Explicitly audit Praxiara for prompt injection and egress bypasses."
+      - "Review approval hashes and TOCTOU protections without editing code."
+      - "Perform a read-only tenant isolation and audit integrity assessment."
+    negative:
+      - "Implement a normal browser agent feature."
+      - "Fix the security finding from the previous audit."
+      - "Audit NuGet package vulnerabilities."

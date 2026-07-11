@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kontrakty API Praxiary"
+  short_description: "REST, SignalR, OpenAPI i kontrakty wire"
+  default_prompt: "Użyj $praxiara-evolve-api-contract, aby zmienić API lub kontrakt sieciowy Praxiary."

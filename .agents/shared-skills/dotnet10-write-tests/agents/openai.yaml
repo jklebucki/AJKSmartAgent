@@ -1,0 +1,4 @@
+interface:
+  display_name: "Testy dla .NET 10"
+  short_description: "Deterministyczne testy xUnit v3"
+  default_prompt: "Użyj $dotnet10-write-tests, aby napisać profesjonalne testy dla kodu .NET 10."

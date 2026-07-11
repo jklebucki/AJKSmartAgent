@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implementacja zmian .NET 10"
+  short_description: "Profesjonalna implementacja zmian w C# 14"
+  default_prompt: "Użyj $dotnet10-implement-change, aby zaimplementować kompletną zmianę w projekcie .NET 10."

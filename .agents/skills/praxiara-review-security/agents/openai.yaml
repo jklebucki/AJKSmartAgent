@@ -1,0 +1,6 @@
+interface:
+  display_name: "Audyt bezpieczeństwa Praxiary"
+  short_description: "Prompt injection, approval, egress i audyt"
+  default_prompt: "Użyj $praxiara-review-security, aby wykonać jawny audyt bezpieczeństwa Praxiary."
+policy:
+  allow_implicit_invocation: false

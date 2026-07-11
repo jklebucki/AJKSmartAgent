@@ -1,0 +1,4 @@
+interface:
+  display_name: "Zależności .NET 10"
+  short_description: "NuGet, licencje, CVE i kontrolowane aktualizacje"
+  default_prompt: "Użyj $dotnet10-manage-dependencies, aby bezpiecznie zarządzić zależnościami projektu .NET 10."

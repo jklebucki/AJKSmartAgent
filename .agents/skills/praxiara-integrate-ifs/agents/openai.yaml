@@ -1,0 +1,4 @@
+interface:
+  display_name: "Integracja IFS Cloud"
+  short_description: "Projection, OData oraz ścieżki API i UI"
+  default_prompt: "Użyj $praxiara-integrate-ifs, aby rozwinąć integrację Praxiary z IFS Cloud."

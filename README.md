@@ -9,4 +9,4 @@
 
 Bezpieczny agent do kontrolowanego wykonywania procesów w aplikacjach internetowych, ze szczególnym wsparciem dla IFS Cloud.
 
-[Plan wytworzenia](docs/PLAN_WYTWORZENIA.md) · [zasady dla agentów](AGENT.md) · [infrastruktura](docs/infrastruktura/README.md)
+[Plan wytworzenia](docs/PLAN_WYTWORZENIA.md) · [zasady dla agentów](AGENTS.md) · [skills Codex](docs/SKILLS-CODEX.md) · [infrastruktura](docs/infrastruktura/README.md)

@@ -19,6 +19,7 @@
     <Project Path="src/Praxiara.Skills/Praxiara.Skills.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Praxiara.AgentSkills.Tests/Praxiara.AgentSkills.Tests.csproj" />
     <Project Path="tests/Praxiara.ArchitectureTests/Praxiara.ArchitectureTests.csproj" />
     <Project Path="tests/Praxiara.Browser.Tests/Praxiara.Browser.Tests.csproj" />
     <Project Path="tests/Praxiara.ContractTests/Praxiara.ContractTests.csproj" />

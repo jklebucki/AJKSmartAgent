@@ -1,0 +1,4 @@
+interface:
+  display_name: "Browser Agent Praxiary"
+  short_description: "Playwright, worker, orchestration i takeover"
+  default_prompt: "Użyj $praxiara-change-browser-agent, aby zmienić wykonanie agenta przeglądarkowego Praxiary."

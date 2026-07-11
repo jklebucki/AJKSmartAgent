@@ -1,0 +1,4 @@
+interface:
+  display_name: "Persystencja Praxiary"
+  short_description: "EF Core, PostgreSQL, migracje i outbox"
+  default_prompt: "Użyj $praxiara-evolve-persistence, aby zmienić model danych lub persystencję Praxiary."

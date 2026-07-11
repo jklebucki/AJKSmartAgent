@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bezpieczny refaktoring .NET 10"
+  short_description: "Refaktoring bez zmiany zachowania publicznego"
+  default_prompt: "Użyj $dotnet10-refactor-safely, aby bezpiecznie uprościć strukturę kodu .NET 10."
