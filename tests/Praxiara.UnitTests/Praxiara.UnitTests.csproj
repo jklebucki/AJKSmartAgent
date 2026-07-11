@@ -19,6 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\skills\ifs\examples\resend-customer-invoice.skill.yaml"
+          Link="Fixtures\resend-customer-invoice.skill.yaml"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Praxiara.Domain\Praxiara.Domain.csproj" />
     <ProjectReference Include="..\..\src\Praxiara.Application\Praxiara.Application.csproj" />
     <ProjectReference Include="..\..\src\Praxiara.Policy\Praxiara.Policy.csproj" />

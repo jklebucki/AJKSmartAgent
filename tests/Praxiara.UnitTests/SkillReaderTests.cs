@@ -22,4 +22,20 @@ public sealed class SkillReaderTests
         Assert.Equal("ifs.invoice.lookup", result.Id);
         Assert.Single(result.Steps);
     }
+
+    [Fact]
+    public void ReadParsesRepositoryIfsExample()
+    {
+        var fixturePath = Path.Combine(
+            AppContext.BaseDirectory,
+            "Fixtures",
+            "resend-customer-invoice.skill.yaml");
+        var yaml = File.ReadAllText(fixturePath);
+
+        var result = new YamlSkillReader().Read(yaml);
+
+        Assert.Equal("ifs.invoice.resend", result.Id);
+        Assert.Equal(Praxiara.Domain.Policy.RiskLevel.R4BusinessCommit, result.Risk.FinalActionLevel);
+        Assert.Contains(result.Steps, step => step.RequiresApproval);
+    }
 }
