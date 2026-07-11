@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Praxiara.ServiceDefaults\Praxiara.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\Praxiara.Application\Praxiara.Application.csproj" />
+    <ProjectReference Include="..\Praxiara.Orchestration\Praxiara.Orchestration.csproj" />
+    <ProjectReference Include="..\Praxiara.Policy\Praxiara.Policy.csproj" />
+    <ProjectReference Include="..\Praxiara.Browser\Praxiara.Browser.csproj" />
+    <ProjectReference Include="..\Praxiara.Skills\Praxiara.Skills.csproj" />
+    <ProjectReference Include="..\Praxiara.Llm\Praxiara.Llm.csproj" />
+    <ProjectReference Include="..\Praxiara.Audit\Praxiara.Audit.csproj" />
+    <ProjectReference Include="..\Praxiara.Integrations.IFS\Praxiara.Integrations.IFS.csproj" />
+    <ProjectReference Include="..\Praxiara.Infrastructure\Praxiara.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

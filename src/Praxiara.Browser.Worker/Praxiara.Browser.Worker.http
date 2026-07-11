@@ -1,0 +1,9 @@
+@Praxiara_BrowserWorker_HostAddress = http://localhost:5090
+
+GET {{Praxiara_BrowserWorker_HostAddress}}/alive
+Accept: application/json
+
+###
+
+GET {{Praxiara_BrowserWorker_HostAddress}}/internal/v1/capabilities
+Accept: application/json

@@ -1,0 +1,12 @@
+{
+  "name": "praxiara",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@11.7.0",
+  "scripts": {
+    "web:dev": "pnpm --filter @praxiara/web dev",
+    "web:build": "pnpm --filter @praxiara/web build",
+    "web:lint": "pnpm --filter @praxiara/web lint",
+    "web:test": "pnpm --filter @praxiara/web test"
+  }
+}

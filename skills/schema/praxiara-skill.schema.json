@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://praxiara.dev/schemas/skill/v1.json",
+  "title": "Praxiara Skill Definition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "version", "site", "inputs", "requiredPermissions", "risk", "preconditions", "steps", "postconditions", "recovery"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9-]*){2,}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "site": {
+      "type": "string",
+      "minLength": 1
+    },
+    "defaultMode": {
+      "enum": ["Observe", "Assist", "Execute"],
+      "default": "Observe"
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/input"
+      }
+    },
+    "requiredPermissions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "risk": {
+      "$ref": "#/$defs/risk"
+    },
+    "preconditions": {
+      "$ref": "#/$defs/assertionList"
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/step" }
+    },
+    "postconditions": {
+      "$ref": "#/$defs/assertionList"
+    },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "$defs": {
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "required", "sensitive"],
+      "properties": {
+        "type": {
+          "enum": ["string", "integer", "number", "boolean", "date", "date-time"]
+        },
+        "required": { "type": "boolean" },
+        "sensitive": { "type": "boolean" }
+      }
+    },
+    "riskLevel": {
+      "enum": ["R0ReadOnly", "R1Navigation", "R2DraftInput", "R3PersistDraft", "R4BusinessCommit", "R5Critical"]
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["defaultLevel", "finalActionLevel"],
+      "properties": {
+        "defaultLevel": { "$ref": "#/$defs/riskLevel" },
+        "finalActionLevel": { "$ref": "#/$defs/riskLevel" }
+      }
+    },
+    "assertionList": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "action"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "action": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "target": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "arguments": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "assertions": {
+          "$ref": "#/$defs/assertionList"
+        },
+        "requiresApproval": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  }
+}

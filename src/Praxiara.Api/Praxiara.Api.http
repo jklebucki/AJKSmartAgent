@@ -1,0 +1,9 @@
+@Praxiara_Api_HostAddress = http://localhost:5080
+
+GET {{Praxiara_Api_HostAddress}}/alive
+Accept: application/json
+
+###
+
+GET {{Praxiara_Api_HostAddress}}/api/v1/system/info
+Accept: application/json

@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Praxiara.Domain\Praxiara.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Praxiara.Contracts\Praxiara.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\Praxiara.Application\Praxiara.Application.csproj" />
+    <ProjectReference Include="..\..\src\Praxiara.Orchestration\Praxiara.Orchestration.csproj" />
+    <ProjectReference Include="..\..\src\Praxiara.Policy\Praxiara.Policy.csproj" />
+    <ProjectReference Include="..\..\src\Praxiara.Browser\Praxiara.Browser.csproj" />
+    <ProjectReference Include="..\..\src\Praxiara.Skills\Praxiara.Skills.csproj" />
+    <ProjectReference Include="..\..\src\Praxiara.Llm\Praxiara.Llm.csproj" />
+    <ProjectReference Include="..\..\src\Praxiara.Audit\Praxiara.Audit.csproj" />
+    <ProjectReference Include="..\..\src\Praxiara.Integrations.IFS\Praxiara.Integrations.IFS.csproj" />
+    <ProjectReference Include="..\..\src\Praxiara.Infrastructure\Praxiara.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

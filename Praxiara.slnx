@@ -1,0 +1,34 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Praxiara.Api/Praxiara.Api.csproj" />
+    <Project Path="src/Praxiara.AppHost/Praxiara.AppHost.csproj" />
+    <Project Path="src/Praxiara.Application/Praxiara.Application.csproj" />
+    <Project Path="src/Praxiara.Audit/Praxiara.Audit.csproj" />
+    <Project Path="src/Praxiara.Browser.Playwright/Praxiara.Browser.Playwright.csproj" />
+    <Project Path="src/Praxiara.Browser.Worker/Praxiara.Browser.Worker.csproj" />
+    <Project Path="src/Praxiara.Browser/Praxiara.Browser.csproj" />
+    <Project Path="src/Praxiara.Contracts/Praxiara.Contracts.csproj" />
+    <Project Path="src/Praxiara.Domain/Praxiara.Domain.csproj" />
+    <Project Path="src/Praxiara.Infrastructure/Praxiara.Infrastructure.csproj" />
+    <Project Path="src/Praxiara.Integrations.IFS/Praxiara.Integrations.IFS.csproj" />
+    <Project Path="src/Praxiara.Llm/Praxiara.Llm.csproj" />
+    <Project Path="src/Praxiara.Orchestration/Praxiara.Orchestration.csproj" />
+    <Project Path="src/Praxiara.Orchestrator.Worker/Praxiara.Orchestrator.Worker.csproj" />
+    <Project Path="src/Praxiara.Policy/Praxiara.Policy.csproj" />
+    <Project Path="src/Praxiara.ServiceDefaults/Praxiara.ServiceDefaults.csproj" />
+    <Project Path="src/Praxiara.Skills/Praxiara.Skills.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Praxiara.ArchitectureTests/Praxiara.ArchitectureTests.csproj" />
+    <Project Path="tests/Praxiara.Browser.Tests/Praxiara.Browser.Tests.csproj" />
+    <Project Path="tests/Praxiara.ContractTests/Praxiara.ContractTests.csproj" />
+    <Project Path="tests/Praxiara.IntegrationTests/Praxiara.IntegrationTests.csproj" />
+    <Project Path="tests/Praxiara.SecurityTests/Praxiara.SecurityTests.csproj" />
+    <Project Path="tests/Praxiara.TestSites/Praxiara.TestSites.csproj" />
+    <Project Path="tests/Praxiara.UnitTests/Praxiara.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/Praxiara.ReplayCli/Praxiara.ReplayCli.csproj" />
+    <Project Path="tools/Praxiara.SkillCli/Praxiara.SkillCli.csproj" />
+  </Folder>
+</Solution>

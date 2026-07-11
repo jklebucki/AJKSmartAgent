@@ -1,0 +1,63 @@
+id: ifs.invoice.resend
+name: Resend customer invoice
+version: 1.0.0
+site: ifs-cloud
+defaultMode: Observe
+inputs:
+  invoiceNumber:
+    type: string
+    required: true
+    sensitive: false
+  mediaCode:
+    type: string
+    required: true
+    sensitive: false
+requiredPermissions:
+  - InvoiceHandling.Read
+  - InvoiceHandling.Send
+risk:
+  defaultLevel: R1Navigation
+  finalActionLevel: R4BusinessCommit
+preconditions:
+  - user-is-authenticated
+  - invoice-number-is-not-empty
+  - environment-is-allowlisted
+steps:
+  - id: find-invoice
+    action: ifs_find_customer_invoice
+    arguments:
+      invoiceNumber: ${invoiceNumber}
+    assertions:
+      - exactly-one-invoice-found
+      - invoice-is-not-cancelled
+  - id: prepare-send-preview
+    action: ifs_prepare_invoice_send
+    arguments:
+      invoiceNumber: ${invoiceNumber}
+      mediaCode: ${mediaCode}
+    assertions:
+      - recipients-are-resolved
+      - media-code-is-allowed
+  - id: send-document
+    action: ifs_send_invoice
+    arguments:
+      invoiceNumber: ${invoiceNumber}
+      mediaCode: ${mediaCode}
+    assertions:
+      - approval-hash-matches-current-action
+    requiresApproval: true
+  - id: verify-history
+    action: ifs_verify_invoice_communication_history
+    arguments:
+      invoiceNumber: ${invoiceNumber}
+    assertions:
+      - new-communication-entry-exists
+      - communication-status-is-success
+postconditions:
+  - invoice-communication-is-confirmed-by-api
+  - audit-record-is-complete
+recovery:
+  multiple-invoices-found: stop-and-request-disambiguation
+  session-expired: require-user-login
+  approval-expired: rebuild-preview-and-request-new-approval
+  verification-failed: stop-and-escalate-with-evidence
