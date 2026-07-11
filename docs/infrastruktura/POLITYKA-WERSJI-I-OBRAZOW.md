@@ -7,28 +7,30 @@ Zapewnić powtarzalne, audytowalne i możliwe do odtworzenia wdrożenia bez niek
 ## Reguły obowiązkowe
 
 1. Nie używamy `latest`, `edge`, `nightly`, ruchomego `main` ani samego major tagu.
-2. Compose uruchamia obraz po immutable digest `sha256`.
-3. Czytelny tag jest przechowywany obok digestu w lockfile i metadanych wydania.
-4. Wszystkie architektury CPU mają osobno zweryfikowany digest.
-5. Obraz musi pochodzić z oficjalnego rejestru projektu lub z własnego kontrolowanego build pipeline.
-6. Każdy obraz ma SBOM, wynik skanu podatności i rejestr licencji.
-7. Wersje klientów i serwerów objęte kontraktem zgodności są aktualizowane razem.
-8. Model LLM jest wersjonowany tak samo rygorystycznie jak kod.
+2. Developerski Compose używa dokładnych tagów zapisanych w `versions.env`; jest to wygodny bootstrap, a nie immutable artefakt wydania.
+3. Produkcyjny Compose uruchamia obraz po immutable digest `sha256` pochodzącym z zatwierdzonego lockfile.
+4. Czytelny tag jest przechowywany obok digestu w lockfile i metadanych wydania.
+5. Wszystkie wspierane architektury CPU mają osobno zweryfikowany digest.
+6. Obraz musi pochodzić z oficjalnego rejestru projektu lub z własnego kontrolowanego build pipeline.
+7. Każdy obraz wydania ma SBOM, wynik skanu podatności i rejestr licencji.
+8. Wersje klientów i serwerów objęte kontraktem zgodności są aktualizowane razem.
+9. Model LLM jest wersjonowany tak samo rygorystycznie jak kod.
 
 ## Pliki źródłowe
 
 `deploy/compose/versions.env` zawiera wersje czytelne dla człowieka:
 
 ```dotenv
-POSTGRES_VERSION=18.4
-VALKEY_VERSION=9.1.0
-KEYCLOAK_VERSION=26.6.3
-OPENBAO_VERSION=2.5.4
+POSTGRES_VERSION=18.4-alpine3.24
+VALKEY_VERSION=9.1.0-alpine3.23
+SEAWEEDFS_VERSION=4.39
+KEYCLOAK_VERSION=26.7.0
+TEMPORAL_VERSION=1.29.7
+OLLAMA_VERSION=0.31.2
 JAEGER_VERSION=2.19.0
-OPENSEARCH_VERSION=3.7.0
 ```
 
-`deploy/compose/images.lock.json` zawiera artefakty wykonywalne:
+Planowany `deploy/compose/images.lock.json` będzie zawierał artefakty wykonywalne wydania:
 
 ```json
 {
@@ -54,7 +56,7 @@ Na dzień sporządzenia dokumentacji warto rozpocząć testy od:
 
 - PostgreSQL 18.4;
 - Valkey 9.1.x;
-- Keycloak 26.6.x;
+- Keycloak 26.7.x;
 - OpenBao 2.5.x;
 - OpenTelemetry Collector z jednej zgodnej linii dystrybucji;
 - Prometheus 3.x;
@@ -62,7 +64,7 @@ Na dzień sporządzenia dokumentacji warto rozpocząć testy od:
 - OpenSearch i Dashboards 3.7.x;
 - Playwright zgodnego dokładnie z pakietem NuGet używanym przez Browser Worker.
 
-Przed utworzeniem lockfile trzeba ponownie sprawdzić aktualne wydania i security advisories. Oficjalne źródła:
+Przy tworzeniu lub aktualizacji lockfile trzeba ponownie sprawdzić aktualne wydania i security advisories. Oficjalne źródła:
 
 - [PostgreSQL versioning](https://www.postgresql.org/support/versioning/)
 - [Valkey releases](https://github.com/valkey-io/valkey/releases)

@@ -2,34 +2,29 @@
 
 ## Cel
 
-Profile w przyszłym `deploy/compose` włączają opcjonalne możliwości. Nie kodują środowiska. Różnice development/production są realizowane przez pliki override, dzięki czemu ta sama nazwa usługi i te same zależności są testowane w obu środowiskach.
+Profile w istniejącym `deploy/compose` włączają opcjonalne możliwości. Nie kodują środowiska. Różnice development/production są realizowane przez pliki override, dzięki czemu ta sama nazwa usługi i te same zależności mogą być testowane w obu środowiskach.
 
 ## Układ plików
 
 ```text
 deploy/compose/
+├── .env.example
 ├── compose.yaml
 ├── compose.dev.yaml
-├── compose.prod-single-node.yaml
-├── compose.observability-lite.yaml
-├── compose.gpu-nvidia.yaml
-├── compose.gpu-amd.yaml
 ├── versions.env
-├── images.lock.json
-├── config/
-│   ├── caddy/
-│   ├── keycloak/
-│   ├── livekit/
-│   ├── observability/
-│   ├── openbao/
-│   ├── temporal/
-│   └── valkey/
-├── init/
-└── secrets/
-    └── README.md
+├── caddy/
+├── jaeger/
+├── otel-collector/
+├── postgres/
+├── prometheus/
+├── seaweedfs/
+├── temporal/
+└── valkey/
 ```
 
-`deploy/compose/secrets` nie zawiera odszyfrowanych sekretów w Git. Produkcyjne sekrety są dostarczane z OpenBao; lokalne pliki sekretów są ignorowane przez Git i mają uprawnienia `0600`.
+Pliki `compose.prod-single-node.yaml`, `compose.gpu-*.yaml`, pełny profil obserwowalności i `images.lock.json` są elementami zakresu docelowego, ale nie istnieją jeszcze w repozytorium. Poleceń oznaczonych dalej jako docelowe nie należy wykonywać przed ich implementacją i przeglądem bezpieczeństwa.
+
+Lokalny plik `deploy/compose/.env` jest ignorowany przez Git. Utwórz go z `.env.example`, wprowadź niepowtarzalne sekrety developerskie i nadaj mu uprawnienia dostępne wyłącznie dla właściciela. Produkcyjne sekrety będą dostarczane z OpenBao, a nie z pliku `.env`.
 
 ## Usługi bazowe
 
@@ -45,6 +40,7 @@ Takie zachowanie umożliwia:
 ```bash
 docker compose \
   --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
   -f deploy/compose/compose.yaml \
   -f deploy/compose/compose.dev.yaml \
   up -d
@@ -52,33 +48,34 @@ docker compose \
 
 ## Profile możliwości
 
-| Profil | Usługi | Zastosowanie |
-|---|---|---|
-| `identity` | `keycloak`, `oauth2-proxy` | logowanie aplikacji i ochrona UI operatorskich |
-| `secrets` | `openbao` | sekrety runtime; lokalnie opcjonalny |
-| `workflow` | `temporal`, `temporal-ui`, init schema | trwałe zadania, approval, retry |
-| `llm-local` | `llama-server` albo dev `ollama` | lokalna inferencja |
-| `browser` | browser coordinator/worker, egress gateway | wykonanie automatyzacji |
-| `stream-webrtc` | `livekit`, opcjonalnie `coturn` | docelowy podgląd i przejęcie |
-| `stream-novnc` | noVNC/websockify/VNC w workerze | diagnostyczny fallback |
-| `observability` | OTel, Prometheus, Alertmanager, Data Prepper, OpenSearch, Dashboards | pełna telemetria |
-| `observability-lite` | OTel, Prometheus, Jaeger memory | lokalny debug o małym koszcie |
-| `mail` | `mailpit` | wyłącznie dev/test |
-| `edge` | `caddy` | TLS i routing |
-| `backup` | pgBackRest i kontrolne restore jobs | backup/PITR |
-| `security` | one-shot Trivy, Syft, Gitleaks, ZAP | CI i lokalne skany |
-| `ops` | narzędzia init/diagnostyka | jawne wywołanie przez operatora |
+| Profil | Stan | Usługi | Zastosowanie |
+|---|---|---|---|
+| `identity` | istnieje | `keycloak` | lokalny OIDC; oauth2-proxy jest rozszerzeniem docelowym |
+| `workflow` | istnieje | `temporal`, `temporal-ui` | trwałe zadania, approval i retry |
+| `llm-local` | istnieje | `ollama` | lokalna inferencja developerska |
+| `observability-lite` | istnieje | OTel Collector, Prometheus, Jaeger | lokalny debug o małym koszcie |
+| `mail` | istnieje | `mailpit` | wyłącznie dev/test |
+| `edge` | istnieje | `caddy` | lokalny routing; produkcyjny TLS wymaga override |
+| `secrets` | planowany | `openbao` | sekrety runtime |
+| `browser` | planowany | browser coordinator/worker, egress gateway | wykonanie automatyzacji |
+| `stream-webrtc` | planowany | `livekit`, opcjonalnie `coturn` | docelowy podgląd i przejęcie |
+| `stream-novnc` | planowany | noVNC/websockify/VNC w workerze | diagnostyczny fallback |
+| `observability` | planowany | OTel, Prometheus, Alertmanager, Data Prepper, OpenSearch, Dashboards | pełna telemetria |
+| `backup` | planowany | pgBackRest i kontrolne restore jobs | backup/PITR |
+| `security` | planowany | one-shot Trivy, Syft, Gitleaks, ZAP | CI i lokalne skany |
+| `ops` | planowany | narzędzia init/diagnostyka | jawne wywołanie przez operatora |
 
 ## Zestawy środowiskowe
 
-Compose nie ma aliasów grup profili. Projekt powinien udostępnić wrapper lub pliki `.env.profiles.example`, lecz źródłem prawdy pozostaje jawna lista `COMPOSE_PROFILES`.
+Compose nie ma aliasów grup profili. Źródłem prawdy pozostaje jawna lista `COMPOSE_PROFILES`. Poniższe dwa warianty developerskie korzystają wyłącznie z już utworzonych profili.
 
 Minimalny development:
 
 ```bash
-export COMPOSE_PROFILES="identity,workflow,llm-local,browser,stream-novnc,mail,edge"
+export COMPOSE_PROFILES="identity,workflow,llm-local,mail,edge"
 docker compose \
   --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
   -f deploy/compose/compose.yaml \
   -f deploy/compose/compose.dev.yaml \
   up -d --wait
@@ -87,27 +84,29 @@ docker compose \
 Development z telemetrią:
 
 ```bash
-export COMPOSE_PROFILES="identity,workflow,llm-local,browser,stream-novnc,mail,edge,observability-lite"
+export COMPOSE_PROFILES="identity,workflow,llm-local,mail,edge,observability-lite"
 docker compose \
   --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
   -f deploy/compose/compose.yaml \
   -f deploy/compose/compose.dev.yaml \
-  -f deploy/compose/compose.observability-lite.yaml \
   up -d --wait
 ```
 
-Hardened single-node:
+Docelowy hardened single-node — polecenie stanie się wykonywalne dopiero po utworzeniu produkcyjnego override i brakujących profili:
 
 ```bash
 export COMPOSE_PROFILES="identity,secrets,workflow,llm-local,browser,stream-webrtc,observability,edge,backup"
 docker compose \
   --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
   -f deploy/compose/compose.yaml \
   -f deploy/compose/compose.prod-single-node.yaml \
   config --quiet
 
 docker compose \
   --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
   -f deploy/compose/compose.yaml \
   -f deploy/compose/compose.prod-single-node.yaml \
   up -d --wait
@@ -122,17 +121,19 @@ CPU:
 ```bash
 docker compose \
   --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
   -f deploy/compose/compose.yaml \
   -f deploy/compose/compose.dev.yaml \
   --profile llm-local \
-  up -d llama-server
+  up -d ollama
 ```
 
-NVIDIA:
+Docelowy runtime llama.cpp z NVIDIA — wymaga planowanego override:
 
 ```bash
 docker compose \
   --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
   -f deploy/compose/compose.yaml \
   -f deploy/compose/compose.dev.yaml \
   -f deploy/compose/compose.gpu-nvidia.yaml \
@@ -140,11 +141,12 @@ docker compose \
   up -d llama-server
 ```
 
-AMD:
+Docelowy runtime llama.cpp z AMD — wymaga planowanego override:
 
 ```bash
 docker compose \
   --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
   -f deploy/compose/compose.yaml \
   -f deploy/compose/compose.dev.yaml \
   -f deploy/compose/compose.gpu-amd.yaml \
@@ -152,13 +154,14 @@ docker compose \
   up -d llama-server
 ```
 
-## One-shot jobs
+## Docelowe one-shot jobs
 
-Skany i init jobs nie są długotrwałymi usługami. Uruchamia się je jawnie:
+Profile `security` i `ops` nie zostały jeszcze dodane do Compose. Po ich implementacji skany i init jobs będą uruchamiane jawnie jako procesy jednorazowe:
 
 ```bash
 docker compose \
   --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
   -f deploy/compose/compose.yaml \
   --profile security \
   run --rm trivy-fs
@@ -167,6 +170,7 @@ docker compose \
 ```bash
 docker compose \
   --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
   -f deploy/compose/compose.yaml \
   --profile ops \
   run --rm postgres-init
@@ -194,6 +198,7 @@ Zalecana kolejność:
 ```bash
 docker compose \
   --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
   -f deploy/compose/compose.yaml \
   -f deploy/compose/compose.dev.yaml \
   config > /dev/null
@@ -202,7 +207,7 @@ docker compose \
 Należy dodatkowo sprawdzić:
 
 - brak `latest`;
-- obecność digestów;
+- w development: dokładne, nieruchome tagi z `versions.env`; w wydaniu produkcyjnym: dodatkowo immutable digesty z lockfile;
 - brak host portów dla usług danych w produkcji;
 - brak bind mountu repozytorium w produkcji;
 - brak `/var/run/docker.sock`;
@@ -217,6 +222,7 @@ Zatrzymanie zachowuje wolumeny:
 ```bash
 docker compose \
   --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
   -f deploy/compose/compose.yaml \
   -f deploy/compose/compose.dev.yaml \
   down

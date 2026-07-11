@@ -1,0 +1,425 @@
+name: ${COMPOSE_PROJECT_NAME:-praxiara}
+
+x-default-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: "3"
+
+x-service-defaults: &service-defaults
+  init: true
+  restart: unless-stopped
+  stop_grace_period: 30s
+  security_opt:
+    - no-new-privileges:true
+  logging: *default-logging
+
+services:
+  postgres:
+    <<: *service-defaults
+    image: postgres:${POSTGRES_VERSION:?Set POSTGRES_VERSION in versions.env}
+    environment:
+      POSTGRES_USER: ${POSTGRES_SUPERUSER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_SUPERUSER_PASSWORD:?Set POSTGRES_SUPERUSER_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DEFAULT_DATABASE:-postgres}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+      PGDATA: /var/lib/postgresql/18/docker
+      PRAXIARA_DB_NAME: ${PRAXIARA_DB_NAME:-praxiara}
+      PRAXIARA_DB_USER: ${PRAXIARA_DB_USER:-praxiara}
+      PRAXIARA_DB_PASSWORD: ${PRAXIARA_DB_PASSWORD:?Set PRAXIARA_DB_PASSWORD in .env}
+      KEYCLOAK_DB_NAME: ${KEYCLOAK_DB_NAME:-keycloak}
+      KEYCLOAK_DB_USER: ${KEYCLOAK_DB_USER:-keycloak}
+      KEYCLOAK_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?Set KEYCLOAK_DB_PASSWORD in .env}
+      TEMPORAL_DB_NAME: ${TEMPORAL_DB_NAME:-temporal}
+      TEMPORAL_VISIBILITY_DB_NAME: ${TEMPORAL_VISIBILITY_DB_NAME:-temporal_visibility}
+      TEMPORAL_DB_USER: ${TEMPORAL_DB_USER:-temporal}
+      TEMPORAL_DB_PASSWORD: ${TEMPORAL_DB_PASSWORD:?Set TEMPORAL_DB_PASSWORD in .env}
+    expose:
+      - "5432"
+    shm_size: 256mb
+    volumes:
+      - postgres-data:/var/lib/postgresql
+      - ./postgres/init-databases.sh:/docker-entrypoint-initdb.d/10-init-databases.sh:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}" -h 127.0.0.1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - backend
+
+  valkey:
+    <<: *service-defaults
+    image: valkey/valkey:${VALKEY_VERSION:?Set VALKEY_VERSION in versions.env}
+    entrypoint:
+      - /bin/sh
+      - /opt/praxiara/valkey-entrypoint.sh
+    environment:
+      VALKEY_PASSWORD: ${VALKEY_PASSWORD:?Set VALKEY_PASSWORD in .env}
+    expose:
+      - "6379"
+    volumes:
+      - valkey-data:/data
+      - ./valkey/entrypoint.sh:/opt/praxiara/valkey-entrypoint.sh:ro
+    tmpfs:
+      - /run/valkey:mode=0700
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - VALKEYCLI_AUTH="$${VALKEY_PASSWORD}" valkey-cli --no-auth-warning ping | grep -q PONG
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - backend
+
+  seaweedfs:
+    <<: *service-defaults
+    image: chrislusf/seaweedfs:${SEAWEEDFS_VERSION:?Set SEAWEEDFS_VERSION in versions.env}
+    entrypoint:
+      - /bin/sh
+      - /opt/praxiara/seaweedfs-entrypoint.sh
+    environment:
+      SEAWEEDFS_S3_ACCESS_KEY: ${SEAWEEDFS_S3_ACCESS_KEY:?Set SEAWEEDFS_S3_ACCESS_KEY in .env}
+      SEAWEEDFS_S3_SECRET_KEY: ${SEAWEEDFS_S3_SECRET_KEY:?Set SEAWEEDFS_S3_SECRET_KEY in .env}
+      SEAWEEDFS_S3_ALLOWED_ORIGINS: ${SEAWEEDFS_S3_ALLOWED_ORIGINS:-http://localhost:5173}
+      SEAWEEDFS_VOLUME_MAX: ${SEAWEEDFS_VOLUME_MAX:-16}
+      SEAWEEDFS_VOLUME_SIZE_LIMIT_MB: ${SEAWEEDFS_VOLUME_SIZE_LIMIT_MB:-1024}
+    expose:
+      - "8080"
+      - "8333"
+      - "8888"
+      - "9327"
+      - "9333"
+    volumes:
+      - seaweedfs-data:/data
+      - ./seaweedfs/entrypoint.sh:/opt/praxiara/seaweedfs-entrypoint.sh:ro
+    tmpfs:
+      - /run/seaweedfs:mode=0700
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - printf 'cluster.status\n' | weed shell -master=127.0.0.1:9333 >/dev/null 2>&1
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      - backend
+
+  keycloak:
+    <<: *service-defaults
+    profiles:
+      - identity
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION:?Set KEYCLOAK_VERSION in versions.env}
+    command:
+      - start-dev
+      - --http-port=8080
+      - --http-management-port=9000
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${KEYCLOAK_DB_NAME:-keycloak}
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USER:-keycloak}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?Set KEYCLOAK_DB_PASSWORD in .env}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD:?Set KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD in .env}
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_HTTP_RELATIVE_PATH: /auth
+      KC_HOSTNAME: ${KEYCLOAK_HOSTNAME:-http://localhost:8081/auth}
+      KC_PROXY_HEADERS: xforwarded
+    expose:
+      - "8080"
+      - "9000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test:
+        - CMD
+        - bash
+        - -ec
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/9000;
+          printf 'GET /health/ready HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3;
+          grep -q '200 OK' <&3
+      interval: 15s
+      timeout: 5s
+      retries: 15
+      start_period: 60s
+    networks:
+      - backend
+      - gateway
+
+  temporal:
+    <<: *service-defaults
+    profiles:
+      - workflow
+    image: temporalio/auto-setup:${TEMPORAL_VERSION:?Set TEMPORAL_VERSION in versions.env}
+    environment:
+      DB: postgres12
+      DB_PORT: "5432"
+      POSTGRES_SEEDS: postgres
+      POSTGRES_USER: ${TEMPORAL_DB_USER:-temporal}
+      POSTGRES_PWD: ${TEMPORAL_DB_PASSWORD:?Set TEMPORAL_DB_PASSWORD in .env}
+      DBNAME: ${TEMPORAL_DB_NAME:-temporal}
+      VISIBILITY_DBNAME: ${TEMPORAL_VISIBILITY_DB_NAME:-temporal_visibility}
+      SKIP_DB_CREATE: "true"
+      ENABLE_ES: "false"
+      BIND_ON_IP: 0.0.0.0
+      DYNAMIC_CONFIG_FILE_PATH: config/dynamicconfig/development.yaml
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_CLI_ADDRESS: temporal:7233
+      DEFAULT_NAMESPACE: ${TEMPORAL_DEFAULT_NAMESPACE:-praxiara}
+      DEFAULT_NAMESPACE_RETENTION: ${TEMPORAL_DEFAULT_NAMESPACE_RETENTION:-168h}
+      LOG_LEVEL: ${TEMPORAL_LOG_LEVEL:-info}
+    expose:
+      - "7233"
+    volumes:
+      - ./temporal/dynamicconfig:/etc/temporal/config/dynamicconfig:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - tctl
+        - --address
+        - 127.0.0.1:7233
+        - cluster
+        - health
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 90s
+    networks:
+      - backend
+
+  temporal-ui:
+    <<: *service-defaults
+    profiles:
+      - workflow
+    image: temporalio/ui:${TEMPORAL_UI_VERSION:?Set TEMPORAL_UI_VERSION in versions.env}
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_CORS_ORIGINS: ${TEMPORAL_CORS_ORIGINS:-http://localhost:5173}
+    expose:
+      - "8080"
+    depends_on:
+      temporal:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - bash
+        - -ec
+        - exec 3<>/dev/tcp/127.0.0.1/8080
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - backend
+      - gateway
+
+  ollama:
+    <<: *service-defaults
+    profiles:
+      - llm-local
+    image: ollama/ollama:${OLLAMA_VERSION:?Set OLLAMA_VERSION in versions.env}
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_KEEP_ALIVE: ${OLLAMA_KEEP_ALIVE:-10m}
+      OLLAMA_NUM_PARALLEL: ${OLLAMA_NUM_PARALLEL:-1}
+    expose:
+      - "11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test:
+        - CMD
+        - ollama
+        - list
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      - backend
+      - gateway
+
+  jaeger:
+    <<: *service-defaults
+    profiles:
+      - observability-lite
+    image: jaegertracing/jaeger:${JAEGER_VERSION:?Set JAEGER_VERSION in versions.env}
+    command:
+      - --config=/etc/jaeger/config.yaml
+    expose:
+      - "4317"
+      - "4318"
+      - "8888"
+      - "13133"
+      - "16686"
+    volumes:
+      - ./jaeger/config.yaml:/etc/jaeger/config.yaml:ro
+    healthcheck:
+      test:
+        - CMD
+        - /cmd/jaeger/jaeger-linux
+        - validate
+        - --config=/etc/jaeger/config.yaml
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      - telemetry
+
+  otel-collector:
+    <<: *service-defaults
+    profiles:
+      - observability-lite
+    image: otel/opentelemetry-collector-contrib:${OTEL_COLLECTOR_VERSION:?Set OTEL_COLLECTOR_VERSION in versions.env}
+    command:
+      - --config=/etc/otelcol-contrib/config.yaml
+    expose:
+      - "4317"
+      - "4318"
+      - "8889"
+      - "13133"
+    volumes:
+      - ./otel-collector/config.yaml:/etc/otelcol-contrib/config.yaml:ro
+    depends_on:
+      jaeger:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - /otelcol-contrib
+        - validate
+        - --config=/etc/otelcol-contrib/config.yaml
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      - backend
+      - telemetry
+
+  prometheus:
+    <<: *service-defaults
+    profiles:
+      - observability-lite
+    image: prom/prometheus:${PROMETHEUS_VERSION:?Set PROMETHEUS_VERSION in versions.env}
+    command:
+      - --config.file=/etc/prometheus/prometheus.yaml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-7d}
+      - --web.enable-lifecycle
+    expose:
+      - "9090"
+    volumes:
+      - prometheus-data:/prometheus
+      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+    depends_on:
+      otel-collector:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -q --spider http://127.0.0.1:9090/-/ready
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - backend
+      - telemetry
+
+  mailpit:
+    <<: *service-defaults
+    profiles:
+      - mail
+    image: axllent/mailpit:${MAILPIT_VERSION:?Set MAILPIT_VERSION in versions.env}
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_MAX_MESSAGES: ${MAILPIT_MAX_MESSAGES:-5000}
+      MP_SMTP_BIND_ADDR: 0.0.0.0:1025
+      MP_UI_BIND_ADDR: 0.0.0.0:8025
+    expose:
+      - "1025"
+      - "8025"
+    volumes:
+      - mailpit-data:/data
+    healthcheck:
+      test:
+        - CMD
+        - /mailpit
+        - readyz
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - backend
+      - gateway
+
+  caddy:
+    <<: *service-defaults
+    profiles:
+      - edge
+    image: caddy:${CADDY_VERSION:?Set CADDY_VERSION in versions.env}
+    environment:
+      PRAXIARA_API_UPSTREAM: ${PRAXIARA_API_UPSTREAM:-host.docker.internal:5080}
+      PRAXIARA_WEB_UPSTREAM: ${PRAXIARA_WEB_UPSTREAM:-host.docker.internal:5173}
+      KEYCLOAK_UPSTREAM: ${KEYCLOAK_UPSTREAM:-keycloak:8080}
+    expose:
+      - "80"
+      - "443"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -q --spider http://127.0.0.1/healthz
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    networks:
+      - backend
+      - gateway
+
+volumes:
+  postgres-data:
+  valkey-data:
+  seaweedfs-data:
+  ollama-data:
+  prometheus-data:
+  mailpit-data:
+  caddy-data:
+  caddy-config:
+
+networks:
+  backend:
+    driver: bridge
+    internal: true
+  telemetry:
+    driver: bridge
+    internal: true
+  gateway:
+    driver: bridge

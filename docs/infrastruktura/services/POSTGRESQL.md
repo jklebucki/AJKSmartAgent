@@ -121,6 +121,7 @@ Development:
 ```bash
 docker compose \
   --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
   -f deploy/compose/compose.yaml \
   -f deploy/compose/compose.dev.yaml \
   up -d --wait postgres
@@ -131,6 +132,7 @@ Idempotentny init:
 ```bash
 docker compose \
   --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
   -f deploy/compose/compose.yaml \
   --profile ops \
   run --rm postgres-init

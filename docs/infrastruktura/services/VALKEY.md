@@ -97,6 +97,7 @@ ACL użytkownika ogranicza commands i key patterns do potrzebnego zakresu. Aplik
 ```bash
 docker compose \
   --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
   -f deploy/compose/compose.yaml \
   -f deploy/compose/compose.dev.yaml \
   up -d --wait valkey

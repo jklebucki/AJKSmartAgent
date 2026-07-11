@@ -1,0 +1,126 @@
+services:
+  postgres:
+    ports:
+      - name: postgres
+        target: 5432
+        published: "${POSTGRES_PORT:-5432}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+
+  valkey:
+    ports:
+      - name: valkey
+        target: 6379
+        published: "${VALKEY_PORT:-6379}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+
+  seaweedfs:
+    ports:
+      - name: seaweedfs-s3
+        target: 8333
+        published: "${SEAWEEDFS_S3_PORT:-8333}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+      - name: seaweedfs-filer
+        target: 8888
+        published: "${SEAWEEDFS_FILER_PORT:-8888}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+      - name: seaweedfs-master
+        target: 9333
+        published: "${SEAWEEDFS_MASTER_PORT:-9333}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+
+  keycloak:
+    ports:
+      - name: keycloak-http
+        target: 8080
+        published: "${KEYCLOAK_PORT:-8081}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+
+  temporal:
+    ports:
+      - name: temporal-grpc
+        target: 7233
+        published: "${TEMPORAL_PORT:-7233}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+
+  temporal-ui:
+    ports:
+      - name: temporal-ui-http
+        target: 8080
+        published: "${TEMPORAL_UI_PORT:-8082}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+
+  ollama:
+    ports:
+      - name: ollama-http
+        target: 11434
+        published: "${OLLAMA_PORT:-11434}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+
+  otel-collector:
+    ports:
+      - name: otlp-grpc
+        target: 4317
+        published: "${OTEL_GRPC_PORT:-4317}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+      - name: otlp-http
+        target: 4318
+        published: "${OTEL_HTTP_PORT:-4318}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+
+  prometheus:
+    ports:
+      - name: prometheus-http
+        target: 9090
+        published: "${PROMETHEUS_PORT:-9090}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+
+  jaeger:
+    ports:
+      - name: jaeger-ui-http
+        target: 16686
+        published: "${JAEGER_UI_PORT:-16686}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+
+  mailpit:
+    ports:
+      - name: mailpit-smtp
+        target: 1025
+        published: "${MAILPIT_SMTP_PORT:-1025}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+      - name: mailpit-ui-http
+        target: 8025
+        published: "${MAILPIT_UI_PORT:-8025}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+
+  caddy:
+    ports:
+      - name: edge-http
+        target: 80
+        published: "${EDGE_HTTP_PORT:-8080}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+      - name: edge-https
+        target: 443
+        published: "${EDGE_HTTPS_PORT:-8443}"
+        host_ip: 127.0.0.1
+        protocol: tcp
+      - name: edge-http3
+        target: 443
+        published: "${EDGE_HTTPS_PORT:-8443}"
+        host_ip: 127.0.0.1
+        protocol: udp

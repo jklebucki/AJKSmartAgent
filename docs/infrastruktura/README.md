@@ -1,6 +1,6 @@
 # Infrastruktura Praxiara
 
-Ten katalog opisuje docelową infrastrukturę aplikacji Praxiara: lokalne środowisko developerskie, instalację produkcyjną na jednym hoście oraz topologie wysokiej dostępności. Dokumentacja jest źródłem wymagań dla przyszłych plików w `deploy/compose`; nie należy kopiować przykładów do produkcji bez uzupełnienia sekretów, TLS, limitów zasobów i kopii zapasowych.
+Ten katalog opisuje docelową infrastrukturę aplikacji Praxiara: lokalne środowisko developerskie, instalację produkcyjną na jednym hoście oraz topologie wysokiej dostępności. W `deploy/compose` istnieje już wykonywalna baza środowiska developerskiego. Instrukcje dotyczące hardened single-node i HA są wymaganiami dla kolejnych plików wdrożeniowych; nie należy stosować przykładów developerskich w produkcji bez sekretów, TLS, limitów zasobów i kopii zapasowych.
 
 ## Zasady nadrzędne
 
@@ -8,7 +8,7 @@ Ten katalog opisuje docelową infrastrukturę aplikacji Praxiara: lokalne środo
 - Domyślny stos preferuje licencje MIT, Apache-2.0, BSD i PostgreSQL License.
 - Komponenty MPL/LGPL/GPL/AGPL wymagają wpisu w rejestrze licencji i oceny obowiązków dystrybucyjnych.
 - SSPL, RSAL, BSL/BUSL, Elastic License, FSL, Commons Clause, PolyForm, licencje `non-commercial`, `evaluation-only` i brak licencji są domyślnie zabronione.
-- Żaden obraz nie używa tagu `latest`; wersja i digest są przypięte.
+- Żaden obraz nie używa tagu `latest`; development używa dokładnych tagów z `versions.env`, a wydanie produkcyjne musi dodatkowo przypinać immutable digest.
 - Sekrety nie trafiają do repozytorium, argumentów procesu, obrazu ani zwykłego `.env`.
 - Browser Worker jest traktowany jak środowisko uruchamiające niezaufany kod z Internetu. Nie ma dostępu do sieci danych ani socketu Dockera.
 - Audyt biznesowy jest niezależny od logów operacyjnych i ma własną retencję oraz kontrolę integralności.
@@ -42,23 +42,49 @@ Ten katalog opisuje docelową infrastrukturę aplikacji Praxiara: lokalne środo
 | E-mail developerski | Mailpit | [MAILPIT.md](services/MAILPIT.md) |
 | Skanowanie i SBOM | Trivy, Syft, Gitleaks CLI, ZAP | [SECURITY-SCANNING.md](services/SECURITY-SCANNING.md) |
 
-## Konwencja przyszłego katalogu wdrożeniowego
+## Stan katalogu wdrożeniowego
 
-Dokumentacja zakłada następujący układ, który zostanie utworzony w osobnym etapie:
+W repozytorium znajduje się obecnie następujący, wykonywalny zakres:
 
 ```text
 deploy/compose/
+├── .env.example
 ├── compose.yaml
 ├── compose.dev.yaml
+├── versions.env
+├── caddy/
+├── jaeger/
+├── otel-collector/
+├── postgres/
+├── prometheus/
+├── seaweedfs/
+├── temporal/
+└── valkey/
+```
+
+Przed pierwszym uruchomieniem:
+
+```bash
+cp deploy/compose/.env.example deploy/compose/.env
+# Replace every replace-with-* value with a unique development secret.
+docker compose \
+  --env-file deploy/compose/versions.env \
+  --env-file deploy/compose/.env \
+  -f deploy/compose/compose.yaml \
+  -f deploy/compose/compose.dev.yaml \
+  config --quiet
+```
+
+Docelowy zakres wdrożeniowy rozszerzy ten katalog o:
+
+```text
+deploy/compose/
 ├── compose.prod-single-node.yaml
 ├── compose.gpu-nvidia.yaml
 ├── compose.gpu-amd.yaml
 ├── compose.observability-lite.yaml
-├── versions.env
 ├── images.lock.json
-├── config/
-├── init/
-└── secrets/
+└── zaszyfrowane definicje sekretów i konfiguracje usług produkcyjnych
 ```
 
 Wszystkie przykłady poleceń są wykonywane z katalogu głównego repozytorium.
@@ -77,7 +103,7 @@ Wszystkie przykłady poleceń są wykonywane z katalogu głównego repozytorium.
 ## Źródła prawdy
 
 - Ten katalog: wymagania infrastrukturalne i procedury.
-- `deploy/compose/images.lock.json`: dokładne digesty uruchamianych obrazów.
+- planowany `deploy/compose/images.lock.json`: dokładne digesty uruchamianych obrazów wydania.
 - `deploy/compose/versions.env`: czytelne wersje testowanego zestawu.
 - SBOM wydania: rzeczywiste składniki i licencje obrazu.
 - OpenBao: sekrety runtime.
