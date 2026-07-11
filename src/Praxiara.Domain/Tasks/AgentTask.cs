@@ -54,25 +54,3 @@ public sealed class AgentTask
         State = nextState;
     }
 }
-
-public enum AgentTaskState
-{
-    Created,
-    AwaitingLogin,
-    Planning,
-    Executing,
-    Verifying,
-    AwaitingApproval,
-    ManualTakeover,
-    Completed,
-    Failed,
-    Cancelled
-}
-
-public sealed class InvalidTaskStateTransitionException(AgentTaskState current, AgentTaskState requested)
-    : InvalidOperationException($"Transition from '{current}' to '{requested}' is not allowed.")
-{
-    public AgentTaskState Current { get; } = current;
-
-    public AgentTaskState Requested { get; } = requested;
-}

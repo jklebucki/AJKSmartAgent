@@ -46,5 +46,3 @@ public sealed class YamlSkillReader
         }
     }
 }
-
-public sealed class InvalidSkillDefinitionException(string message) : FormatException(message);

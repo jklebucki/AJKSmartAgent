@@ -50,8 +50,3 @@ public sealed class ChromiumRuntime(ChromiumRuntimeOptions options) : IAsyncDisp
         _initializationLock.Dispose();
     }
 }
-
-public sealed record ChromiumRuntimeOptions(
-    bool Headless = true,
-    bool ChromiumSandbox = true,
-    string? ExecutablePath = null);

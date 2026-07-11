@@ -9,10 +9,3 @@ public enum RiskLevel
     R4BusinessCommit = 4,
     R5Critical = 5
 }
-
-public enum SkillExecutionMode
-{
-    Observe,
-    Assist,
-    Execute
-}

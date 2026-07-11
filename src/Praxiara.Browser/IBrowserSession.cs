@@ -16,8 +16,3 @@ public interface IBrowserSession : IAsyncDisposable
 
     ValueTask<string> StopTraceAsync(CancellationToken cancellationToken);
 }
-
-public interface IBrowserSessionFactory
-{
-    ValueTask<IBrowserSession> CreateAsync(Guid sessionId, CancellationToken cancellationToken);
-}

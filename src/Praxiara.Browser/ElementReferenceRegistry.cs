@@ -36,17 +36,3 @@ public sealed class ElementReferenceRegistry<TLocator> where TLocator : class
         }
     }
 }
-
-public sealed class StalePageObservationException(long expected, long current)
-    : InvalidOperationException($"Page revision '{expected}' is stale; current revision is '{current}'.")
-{
-    public long Expected { get; } = expected;
-
-    public long Current { get; } = current;
-}
-
-public sealed class UnknownElementReferenceException(string elementReference)
-    : KeyNotFoundException($"Element reference '{elementReference}' does not exist in the current observation.")
-{
-    public string ElementReference { get; } = elementReference;
-}

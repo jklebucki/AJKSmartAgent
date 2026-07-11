@@ -36,6 +36,4 @@ app.MapGet("/api/v1/system/info", () => new SystemInfoResponse(
 
 app.Run();
 
-internal sealed record SystemInfoResponse(string Name, string Version, string Status);
-
 public partial class Program;

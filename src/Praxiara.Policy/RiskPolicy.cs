@@ -73,10 +73,3 @@ public sealed class RiskPolicy(
                     : $"{item.Value.ToString()[..253]}...",
                 StringComparer.Ordinal);
 }
-
-public sealed record ToolPolicyDescriptor(
-    string ToolName,
-    string DisplayName,
-    RiskLevel RiskLevel,
-    string Consequence,
-    string? RequiredPermission = null);

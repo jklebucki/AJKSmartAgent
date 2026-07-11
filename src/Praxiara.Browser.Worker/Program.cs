@@ -20,10 +20,4 @@ app.MapGet("/internal/v1/capabilities", () => new BrowserWorkerCapabilities(
 
 app.Run();
 
-internal sealed record BrowserWorkerCapabilities(
-    string Engine,
-    bool SemanticObservations,
-    bool Tracing,
-    bool ManualTakeover);
-
 public partial class Program;

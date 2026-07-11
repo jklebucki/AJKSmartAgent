@@ -1,0 +1,1 @@
+internal sealed record SystemInfoResponse(string Name, string Version, string Status);
