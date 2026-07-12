@@ -1440,6 +1440,10 @@ Fazy są bramami dojścia do pełnego produktu. Nie są definicją okrojonego MV
 - data classification, redaction i retention engine;
 - test sites i bazowy security harness.
 
+**Postęp implementacji backendu:**
+
+- [x] **E01.1 — Egzekwowanie granic modułów:** testy architektury obejmują wszystkie projekty backendu w `src`, odrzucają niedozwolony kierunek zależności i wymagają jawnej klasyfikacji każdego nowego projektu (ukończono 2026-07-12).
+
 **Kryteria wejścia:** zakończona Faza 0, zaakceptowane ADR i backlog epików.
 
 **Kryteria wyjścia:**
