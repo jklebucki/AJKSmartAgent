@@ -1,6 +1,6 @@
 # Rejestr licencji zależności kodu
 
-Stan weryfikacji: 11 lipca 2026. Ten rejestr obejmuje zależności obecnego szkieletu, nie przyszłe usługi kontenerowe ani wagi modeli. Nie zastępuje analizy prawnej przed dystrybucją produktu.
+Stan weryfikacji: 12 lipca 2026. Ten rejestr obejmuje zależności obecnego szkieletu, nie przyszłe usługi kontenerowe ani wagi modeli. Nie zastępuje analizy prawnej przed dystrybucją produktu.
 
 ## Zasada
 
@@ -14,11 +14,12 @@ W repozytorium wolno używać wyłącznie komponentów bezpłatnych w zastosowan
 | Microsoft.Playwright | MIT |
 | OpenTelemetry | Apache-2.0 |
 | Npgsql EF Core provider | PostgreSQL License |
+| Scalar.AspNetCore | MIT |
 | YamlDotNet | MIT |
 | xUnit v3 | Apache-2.0 |
 | coverlet | MIT |
 
-Źródła: [dotnet](https://github.com/dotnet), [Aspire](https://github.com/dotnet/aspire), [Playwright .NET](https://github.com/microsoft/playwright-dotnet), [OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet), [Npgsql](https://github.com/npgsql/npgsql), [YamlDotNet](https://github.com/aaubry/YamlDotNet), [xUnit](https://github.com/xunit/xunit), [coverlet](https://github.com/coverlet-coverage/coverlet).
+Źródła: [dotnet](https://github.com/dotnet), [Aspire](https://github.com/dotnet/aspire), [Playwright .NET](https://github.com/microsoft/playwright-dotnet), [OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet), [Npgsql](https://github.com/npgsql/npgsql), [Scalar](https://github.com/scalar/scalar), [YamlDotNet](https://github.com/aaubry/YamlDotNet), [xUnit](https://github.com/xunit/xunit), [coverlet](https://github.com/coverlet-coverage/coverlet).
 
 ## Bezpośrednie zależności frontendowe
 

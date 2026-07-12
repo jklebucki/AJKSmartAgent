@@ -1,6 +1,8 @@
 using Praxiara.Api.Hubs;
 using Praxiara.Api.Security;
 
+using Scalar.AspNetCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
@@ -22,6 +24,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options => options.WithTitle("Praxiara API Reference"));
 }
 
 app.UseAuthentication();
