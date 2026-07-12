@@ -22,20 +22,45 @@ admin_password="$(cat "$PRAXIARA_SEED_ADMIN_PASSWORD_FILE")"
 require_value "Seed administrator password" "$admin_password"
 
 kcadm="/opt/keycloak/bin/kcadm.sh"
-"$kcadm" config credentials \
-  --server "$KEYCLOAK_URL" \
+user_id="$("$kcadm" get users --no-config \
+  --server "$KEYCLOAK_ADMIN_URL" \
   --realm master \
   --user "$KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME" \
-  --password "$KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD"
-
-user_id="$("$kcadm" get users --realm praxiara --query "username=$PRAXIARA_SEED_ADMIN_USERNAME" --fields id --format csv --noquotes | tr -d '\r\n')"
+  --password "$KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD" \
+  --target-realm praxiara \
+  --query "username=$PRAXIARA_SEED_ADMIN_USERNAME" \
+  --fields id --format csv --noquotes | tr -d '\r\n')"
 if [ -z "$user_id" ]; then
-  "$kcadm" create users --realm praxiara \
+  "$kcadm" create users --no-config \
+    --server "$KEYCLOAK_ADMIN_URL" \
+    --realm master \
+    --user "$KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME" \
+    --password "$KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD" \
+    --target-realm praxiara \
     --set "username=$PRAXIARA_SEED_ADMIN_USERNAME" \
     --set enabled=true
-  user_id="$("$kcadm" get users --realm praxiara --query "username=$PRAXIARA_SEED_ADMIN_USERNAME" --fields id --format csv --noquotes | tr -d '\r\n')"
+  user_id="$("$kcadm" get users --no-config \
+    --server "$KEYCLOAK_ADMIN_URL" \
+    --realm master \
+    --user "$KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME" \
+    --password "$KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD" \
+    --target-realm praxiara \
+    --query "username=$PRAXIARA_SEED_ADMIN_USERNAME" \
+    --fields id --format csv --noquotes | tr -d '\r\n')"
   require_value "Seed administrator id" "$user_id"
-  "$kcadm" set-password --realm praxiara --userid "$user_id" --new-password "$admin_password"
+  "$kcadm" set-password --no-config \
+    --server "$KEYCLOAK_ADMIN_URL" \
+    --realm master \
+    --user "$KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME" \
+    --password "$KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD" \
+    --target-realm praxiara \
+    --userid "$user_id" --new-password "$admin_password"
 fi
 
-"$kcadm" add-roles --realm praxiara --userid "$user_id" --rolename praxiara-admin
+"$kcadm" add-roles --no-config \
+  --server "$KEYCLOAK_ADMIN_URL" \
+  --realm master \
+  --user "$KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME" \
+  --password "$KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD" \
+  --target-realm praxiara \
+  --uid "$user_id" --rolename praxiara-admin

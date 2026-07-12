@@ -133,6 +133,7 @@ services:
       KC_HTTP_ENABLED: "true"
       KC_HTTP_RELATIVE_PATH: /auth
       KC_HOSTNAME: ${KEYCLOAK_HOSTNAME:-http://localhost:8081/auth}
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
       KC_PROXY_HEADERS: xforwarded
     expose:
       - "8080"
@@ -151,7 +152,7 @@ services:
         - -ec
         - >-
           exec 3<>/dev/tcp/127.0.0.1/9000;
-          printf 'GET /health/ready HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3;
+          printf 'GET /auth/health/ready HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3;
           grep -q '200 OK' <&3
       interval: 15s
       timeout: 5s
@@ -170,7 +171,7 @@ services:
       - /bin/sh
       - /opt/praxiara/keycloak-init.sh
     environment:
-      KEYCLOAK_URL: http://keycloak:8080/auth
+      KEYCLOAK_ADMIN_URL: ${KEYCLOAK_ADMIN_URL:-http://host.docker.internal:8081/auth}
       KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME:-admin}
       KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD:?Set KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD in .env}
       PRAXIARA_SEED_ADMIN_USERNAME: ${PRAXIARA_SEED_ADMIN_USERNAME:?Set PRAXIARA_SEED_ADMIN_USERNAME in .env}
@@ -183,8 +184,11 @@ services:
       keycloak:
         condition: service_healthy
     restart: "no"
+    extra_hosts:
+      - host.docker.internal:host-gateway
     networks:
       - backend
+      - gateway
 
   temporal:
     <<: *service-defaults
