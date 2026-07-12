@@ -119,7 +119,7 @@ Każdy krok kończy dodatkowo `git diff --check`. Kroki zależności uruchamiaj�
 
 ### 5.1. DISC — discovery, decyzje i dowody wykonalności
 
-Próba wykonania `DISC-001`–`DISC-010` z 2026-07-12 jest opisana w [raporcie discovery](discovery/RAPORT-DISC-001-010.md). Kroki wymagające imiennego ownera, działającego kontenera lub prawdziwego sandboxu IFS pozostają otwarte; przygotowane artefakty nie zastępują tych dowodów.
+Próba wykonania `DISC-001`–`DISC-010` z 2026-07-12 jest opisana w [raporcie discovery](discovery/RAPORT-DISC-001-010.md). Kolejna iteracja `DISC-011`–`DISC-018` oraz `GOV-001`–`GOV-002` jest opisana w [raporcie discovery](discovery/RAPORT-DISC-011-020.md). Projekty ADR dla `GOV-003`–`GOV-012` opisuje [raport governance](discovery/RAPORT-GOV-003-012.md). Kroki wymagające imiennego ownera, działającego kontenera, zarządzanej stacji Windows lub prawdziwego sandboxu IFS pozostają otwarte; przygotowane artefakty nie zastępują tych dowodów.
 
 - [ ] `DISC-001` `[DOC]` Wyznacz ownerów produktu, architektury, bezpieczeństwa, danych, IFS i SRE. Zależy od: —. Dowód: zatwierdzona tabela ownerów i zastępstw.
 - [ ] `DISC-002` `[DOC]` Zdefiniuj jeden proces referencyjny R0 na syntetycznych danych IFS. Zależy od: DISC-001. Dowód: scenariusz, wejście, wynik i verifier.
@@ -133,8 +133,8 @@ Próba wykonania `DISC-001`–`DISC-010` z 2026-07-12 jest opisana w [raporcie d
 - [ ] `DISC-010` `[IFS]` Zinwentaryzuj Projection/OData dla procesów DISC-002–004. Zależy od: DISC-002, DISC-003, DISC-004. Dowód: route matrix API/UI/Hybrid.
 - [ ] `DISC-011` `[IFS]` Sprawdź zachowanie Aurena Agent na zarządzanej stacji Windows. Zależy od: DISC-004. Dowód: raport funkcji niemożliwych w Chromium.
 - [ ] `DISC-012` `[DOC]` Zdecyduj, czy Windows companion należy do zakresu pierwszego GA. Zależy od: DISC-011. Dowód: decyzja ownerów z ryzykiem i terminem.
-- [ ] `DISC-013` `[IMP]` Zbuduj spike structured output dla lokalnego modelu na przypiętej rewizji. Zależy od: —. Dowód: zapisane przypadki eval bez danych klienta.
-- [ ] `DISC-014` `[TST]` Zmierz poprawność pojedynczych tool calls lokalnego modelu. Zależy od: DISC-013. Dowód: metryka, próg i surowe zredagowane wyniki.
+- [x] `DISC-013` `[IMP]` Zbuduj spike structured output dla lokalnego modelu na przypiętej rewizji. Zależy od: —. Dowód: `tools/Praxiara.ModelSpike` i `MODEL-STRUCTURED-OUTPUT-SPIKE.md`; wykonano 2026-07-12.
+- [x] `DISC-014` `[TST]` Zmierz poprawność pojedynczych tool calls lokalnego modelu. Zależy od: DISC-013. Dowód: `gpt-oss-20b-tool-eval.json`, 10/10 przypadków; wykonano 2026-07-12.
 - [ ] `DISC-015` `[SEC]` Przeprowadź spike prompt injection i aplikacyjnego egress deny. Zależy od: DISC-005, DISC-013. Dowód: findingi i reprodukowalne testy negatywne.
 - [ ] `DISC-016` `[DEP]` Zweryfikuj licencje konkretnego stosu spike, obrazów i modelu. Zależy od: DISC-005, DISC-008, DISC-013. Dowód: rejestr wersji, licencji i hashy.
 - [ ] `DISC-017` `[DOC]` Utwórz capacity model sesji Chromium i inferencji. Zależy od: DISC-006, DISC-014. Dowód: założenia, limity i margines bezpieczeństwa.
