@@ -1,0 +1,25 @@
+- grid "Customer invoices":
+  - row "Invoice headers":
+    - columnheader "Invoice ID"
+    - columnheader "Customer"
+    - columnheader "Status"
+    - columnheader "Amount"
+    - columnheader "Currency"
+  - row "Invoice 1001, Northwind, open, 1250.00 PLN":
+    - gridcell "1001"
+    - gridcell "Northwind"
+    - gridcell "Open"
+    - gridcell "1250.00"
+    - gridcell "PLN"
+  - row "Invoice 1002, Contoso, paid, 840.50 EUR":
+    - gridcell "1002"
+    - gridcell "Contoso"
+    - gridcell "Paid"
+    - gridcell "840.50"
+    - gridcell "EUR"
+  - row "Invoice 1003, Fabrikam, overdue, 415.75 USD":
+    - gridcell "1003"
+    - gridcell "Fabrikam"
+    - gridcell "Overdue"
+    - gridcell "415.75"
+    - gridcell "USD"

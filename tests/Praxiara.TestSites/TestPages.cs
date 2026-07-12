@@ -8,6 +8,7 @@ internal static class TestPages
         <main>
           <h1>Praxiara deterministic test sites</h1>
           <a href="/forms/basic">Basic form</a>
+          <a href="/ifs/customer-invoices">IFS customer invoices grid</a>
           <a href="/security/prompt-injection">Prompt injection fixture</a>
         </main>
       </body>
