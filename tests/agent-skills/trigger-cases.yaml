@@ -85,6 +85,7 @@ skills:
       - "Implement an IFS Projection client operation for customer invoices."
       - "Route an IFS operation between OData and Playwright."
       - "Add an execution profile for an Aurena Agent dependent process."
+      - "Verify an approved IFS OData metadata endpoint in a test sandbox."
     negative:
       - "Automate a generic website unrelated to IFS."
       - "Create a database migration for audit events."

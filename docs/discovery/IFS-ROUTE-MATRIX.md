@@ -2,7 +2,7 @@
 
 ## Status
 
-`BLOKADA`: nie udostępniono zatwierdzonego eksportu `$openapi`, profilu sandboxu IFS ani wyników permission check. Zgodnie z zasadą API-first i fail-closed wszystkie trasy wykonawcze pozostają `deny/stop`. Tabela zapisuje hipotezę do zweryfikowania, nie registry produkcyjny.
+`BLOKADA CZĘŚCIOWO ZMNIEJSZONA`: 2026-07-12 potwierdzono odczytowy dostęp UI do testowego IFS Cloud, opisany w [dowodzie dostępu do sandboxu](IFS-SANDBOX-ACCESS.md). Nie udostępniono jednak zatwierdzonego eksportu `$openapi`, profilu sandboxu IFS ani wyników permission check. Zgodnie z zasadą API-first i fail-closed wszystkie trasy wykonawcze pozostają `deny/stop`. Tabela zapisuje hipotezę do zweryfikowania, nie registry produkcyjny.
 
 | Proces | Kandydat API | Kandydat UI | Preferowana trasa po potwierdzeniu | Bieżąca trasa | Verifier |
 |---|---|---|---|---|---|

@@ -80,6 +80,7 @@ public sealed class SourceLayoutTests
                 SearchOption.AllDirectories))
             .Where(file => !file.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
             .Where(file => !file.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
+            .Where(file => !file.Contains($"{Path.DirectorySeparatorChar}Migrations{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
             .Where(file => !file.EndsWith(".g.cs", StringComparison.OrdinalIgnoreCase))
             .Order(StringComparer.Ordinal);
     }

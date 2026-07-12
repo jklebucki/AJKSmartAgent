@@ -35,6 +35,14 @@ Zatrzymaj pracę, jeśli nie można jednoznacznie wskazać rekordu, skutku albo 
 
 Jeśli oficjalne API jest nieznane lub brak sandboxu do potwierdzenia kontraktu, przygotuj bezpieczny projekt albo spike; nie deklaruj gotowej integracji.
 
+### 2.1 Zweryfikuj endpoint metadanych w sandboxie
+
+- Użyj wyłącznie dokładnego endpointu zatwierdzonego przez administratora, API Explorer albo użytkownika z uprawnieniem do sandboxu. Techniczna nazwa strony UI nie dowodzi nazwy projekcji.
+- Zaloguj się standardową ścieżką UI, a potem potwierdź pojedynczy endpoint przez `/<Projection>.svc/$metadata` w aktywnej sesji przeglądarki. Zapisz tylko wynik transportu i sygnaturę schematu; nie zapisuj danych encji, wartości profilu, cookies, tokenów ani pełnego payloadu.
+- Jeśli sterowanie przeglądarką zwróci `ERR_BLOCKED_BY_CLIENT`, nie uznawaj endpointu za nieistniejący. Pozwól użytkownikowi otworzyć dokładny URL ręcznie, a następnie odczytaj bieżącą kartę bez modyfikacji.
+- Traktuj `401` albo przekierowanie do logowania wyłącznie jako dowód bramy uwierzytelnienia, nie istnienia projekcji. Dopiero odpowiedź metadanych po uwierzytelnieniu potwierdza schemat konkretnej usługi.
+- Nie pobieraj ani nie odtwarzaj tokenu, cookie lub hasła formularza przez `curl`, nagłówek albo storage przeglądarki. Nie skanuj nazw `.svc`; przy braku zatwierdzonej ścieżki zatrzymaj discovery i poproś o API Explorer lub eksport metadanych.
+
 ### 3. Wybierz trasę
 
 Wybierz dokładnie jedną trasę dla każdego etapu:

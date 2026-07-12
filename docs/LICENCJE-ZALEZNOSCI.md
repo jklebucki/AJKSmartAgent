@@ -11,6 +11,7 @@ W repozytorium wolno używać wyłącznie komponentów bezpłatnych w zastosowan
 | Grupa | Licencja |
 |---|---|
 | .NET, ASP.NET Core, Aspire, Microsoft.Extensions.AI, EF Core | MIT |
+| Microsoft.Extensions.Http 10.0.9 | MIT |
 | Microsoft.Playwright | MIT |
 | OpenTelemetry | Apache-2.0 |
 | Npgsql EF Core provider | PostgreSQL License |

@@ -61,8 +61,29 @@
 
 .left-rail {
   display: grid;
-  grid-template-rows: minmax(320px, 1.2fr) minmax(200px, 0.8fr);
+  grid-template-rows: minmax(320px, 1.2fr) minmax(200px, 0.8fr) minmax(220px, auto);
   gap: 14px;
+}
+
+.ifs-environment-controls {
+  display: grid;
+  gap: 10px;
+}
+
+.ifs-environment-controls label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.ifs-environment-controls select {
+  width: 100%;
+  padding: 9px;
+  color: var(--text);
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
 }
 
 .panel {

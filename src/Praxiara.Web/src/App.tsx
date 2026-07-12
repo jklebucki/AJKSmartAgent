@@ -3,6 +3,7 @@ import { ApprovalPanel } from './features/approvals/ApprovalPanel'
 import { BrowserPanel } from './features/browser-view/BrowserPanel'
 import { ChatPanel } from './features/chat/ChatPanel'
 import { TaskTimeline } from './features/task-timeline/TaskTimeline'
+import { IfsEnvironmentPanel } from './features/ifs-environments/IfsEnvironmentPanel'
 import './App.css'
 
 export function App() {
@@ -25,6 +26,7 @@ export function App() {
         <aside className="left-rail">
           <ChatPanel />
           <TaskTimeline />
+          <IfsEnvironmentPanel />
         </aside>
         <BrowserPanel />
         <ApprovalPanel />
