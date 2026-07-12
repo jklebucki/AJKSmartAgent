@@ -43,6 +43,12 @@
   font-size: 0.82rem;
 }
 
+.authentication-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .app-navigation {
   display: flex;
   gap: 8px;
@@ -72,6 +78,10 @@
   height: 8px;
   background: #687284;
   border-radius: 50%;
+}
+
+.status-dot.is-connected {
+  background: var(--accent);
 }
 
 .workspace {

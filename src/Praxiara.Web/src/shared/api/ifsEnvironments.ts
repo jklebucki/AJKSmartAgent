@@ -15,6 +15,13 @@ const ifsEnvironmentSchema = z.object({
 
 export type IfsEnvironment = z.infer<typeof ifsEnvironmentSchema>
 
+const authenticationSessionSchema = z.object({
+  userName: z.string(),
+  roles: z.array(z.string()),
+})
+
+export type AuthenticationSession = z.infer<typeof authenticationSessionSchema>
+
 export type IfsEnvironmentInput = {
   id: string
   baseUri: string
@@ -70,6 +77,30 @@ export async function deleteIfsEnvironment(id: string): Promise<void> {
   })
   if (!response.ok) {
     throw new Error(`IFS_ENVIRONMENT_DELETE_${response.status}`)
+  }
+}
+
+export async function getAuthenticationSession(): Promise<AuthenticationSession | null> {
+  const response = await fetch('/api/v1/auth/session', { credentials: 'include' })
+  if (response.status === 401) {
+    return null
+  }
+  if (!response.ok) {
+    throw new Error(`PRAXIARA_AUTH_SESSION_${response.status}`)
+  }
+
+  return authenticationSessionSchema.parse(await response.json())
+}
+
+export async function logout(): Promise<void> {
+  const antiforgeryToken = await getAntiforgeryToken()
+  const response = await fetch('/api/v1/auth/logout', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'X-CSRF-TOKEN': antiforgeryToken },
+  })
+  if (!response.ok) {
+    throw new Error(`PRAXIARA_LOGOUT_${response.status}`)
   }
 }
 

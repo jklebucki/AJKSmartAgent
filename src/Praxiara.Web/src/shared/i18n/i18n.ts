@@ -19,7 +19,12 @@ void i18n.use(initReactI18next).init({
           workspace: 'Obszar roboczy',
           ifsEndpoints: 'Endpointy IFS',
         },
-        authentication: { login: 'Zaloguj się' },
+        authentication: {
+          login: 'Zaloguj się',
+          logout: 'Wyloguj się',
+          session: 'Sesja użytkownika',
+          signedInAs: 'Zalogowano: {{userName}}',
+        },
         chat: {
           title: 'Zadanie',
           placeholder: 'Opisz, co mam wykonać…',

@@ -254,6 +254,7 @@ Nie markuj testu jako skipped bez przyczyny i właściciela naprawy. Flaky test 
 7. Uruchom formatowanie, build, testy, audit i compose config odpowiednie dla zmiany.
 8. Przejrzyj diff pod kątem sekretów, niezamierzonych zmian, języka i licencji.
 9. W raporcie podaj wynik, pliki, testy i rzeczywiste ograniczenia. Nie twierdź, że coś działa produkcyjnie bez dowodu.
+10. Przed zakończeniem zadania zatrzymaj każdy proces aplikacyjny .NET uruchomiony przez agenta do diagnostyki, testu manualnego lub lokalnego debugowania. Nie zatrzymuj procesów IDE ani procesów uruchomionych przez użytkownika, jeśli ich właściciel nie jest jednoznaczny.
 
 ## 12. Definition of Done
 

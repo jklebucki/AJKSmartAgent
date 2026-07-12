@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -13,11 +15,12 @@ public static class AuthenticationEndpoints
         var group = endpoints.MapGroup("/api/v1/auth").WithTags("Authentication");
 
         group.MapGet("/login", Login).WithName("Login").AllowAnonymous();
-        group.MapPost("/logout", Logout)
+        group.MapPost("/logout", (Delegate)Logout)
             .WithName("Logout")
             .RequireAuthorization()
             .WithMetadata(new RequireAntiforgeryTokenAttribute(true));
         group.MapGet("/antiforgery", GetAntiforgeryToken).WithName("GetAntiforgeryToken").RequireAuthorization();
+        group.MapGet("/session", GetSession).WithName("GetAuthenticationSession").RequireAuthorization();
 
         return endpoints;
     }
@@ -27,13 +30,20 @@ public static class AuthenticationEndpoints
             new AuthenticationProperties { RedirectUri = IsLocalReturnUrl(returnUrl) ? returnUrl : "/" },
             [OpenIdConnectDefaults.AuthenticationScheme]);
 
-    private static SignOutHttpResult Logout() =>
-        TypedResults.SignOut(
-            new AuthenticationProperties { RedirectUri = "/" },
-            [CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme]);
+    private static async Task<NoContent> Logout(HttpContext context)
+    {
+        await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return TypedResults.NoContent();
+    }
 
     private static Ok<AntiforgeryTokenResponse> GetAntiforgeryToken(IAntiforgery antiforgery, HttpContext context) =>
         TypedResults.Ok(new AntiforgeryTokenResponse(antiforgery.GetAndStoreTokens(context).RequestToken!));
+
+    private static Ok<AuthenticationSessionResponse> GetSession(ClaimsPrincipal user) =>
+        TypedResults.Ok(
+            new AuthenticationSessionResponse(
+                user.Identity?.Name ?? "unknown",
+                user.FindAll(ClaimTypes.Role).Select(claim => claim.Value).Order(StringComparer.Ordinal).ToArray()));
 
     private static bool IsLocalReturnUrl(string? returnUrl) =>
         !string.IsNullOrWhiteSpace(returnUrl) &&
