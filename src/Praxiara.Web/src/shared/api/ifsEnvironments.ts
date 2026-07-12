@@ -15,6 +15,19 @@ const ifsEnvironmentSchema = z.object({
 
 export type IfsEnvironment = z.infer<typeof ifsEnvironmentSchema>
 
+export type IfsEnvironmentInput = {
+  id: string
+  baseUri: string
+  tenant: string
+  locale: string
+  environmentKind: string
+  allowedProjectionNames: string[]
+  authenticationMode: string
+  secretFilePath?: string
+  tokenEndpoint?: string | null
+  clientId?: string | null
+}
+
 export async function getIfsEnvironments(): Promise<IfsEnvironment[]> {
   const response = await fetch('/api/v1/ifs/environments', { credentials: 'include' })
   if (!response.ok) {
@@ -22,6 +35,38 @@ export async function getIfsEnvironments(): Promise<IfsEnvironment[]> {
   }
 
   return z.array(ifsEnvironmentSchema).parse(await response.json())
+}
+
+export async function createIfsEnvironment(input: IfsEnvironmentInput): Promise<IfsEnvironment> {
+  const response = await fetch('/api/v1/ifs/environments', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  })
+
+  return parseIfsEnvironmentResponse(response, 'IFS_ENVIRONMENT_CREATE')
+}
+
+export async function updateIfsEnvironment(id: string, input: Omit<IfsEnvironmentInput, 'id'>): Promise<IfsEnvironment> {
+  const response = await fetch(`/api/v1/ifs/environments/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  })
+
+  return parseIfsEnvironmentResponse(response, 'IFS_ENVIRONMENT_UPDATE')
+}
+
+export async function deleteIfsEnvironment(id: string): Promise<void> {
+  const response = await fetch(`/api/v1/ifs/environments/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  })
+  if (!response.ok) {
+    throw new Error(`IFS_ENVIRONMENT_DELETE_${response.status}`)
+  }
 }
 
 export async function getIfsProjectionMetadata(environmentId: string, projectionName: string): Promise<string> {
@@ -34,4 +79,12 @@ export async function getIfsProjectionMetadata(environmentId: string, projection
   }
 
   return response.text()
+}
+
+async function parseIfsEnvironmentResponse(response: Response, errorPrefix: string): Promise<IfsEnvironment> {
+  if (!response.ok) {
+    throw new Error(`${errorPrefix}_${response.status}`)
+  }
+
+  return ifsEnvironmentSchema.parse(await response.json())
 }

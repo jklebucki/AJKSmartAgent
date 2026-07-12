@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import { getIfsEnvironments, getIfsProjectionMetadata } from '../../shared/api/ifsEnvironments'
 
 export function IfsEnvironmentPanel() {
@@ -45,6 +46,7 @@ export function IfsEnvironmentPanel() {
     <section className="panel ifs-environment-panel" aria-labelledby="ifs-environments-title">
       <div className="panel-heading">
         <h2 id="ifs-environments-title">{t('ifsEnvironments.title')}</h2>
+        <Link className="secondary-button" to="/ifs-endpoints">{t('ifsEnvironments.manage')}</Link>
       </div>
       {environmentsQuery.isLoading && <p className="hint">{t('ifsEnvironments.loading')}</p>}
       {environmentsQuery.isError && <p className="hint" role="status">{t('ifsEnvironments.unavailable')}</p>}
