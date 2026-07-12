@@ -11,12 +11,20 @@ export default defineConfig(({ mode }) => {
       proxy: {
         '/api': {
           target: apiUpstream,
-          changeOrigin: true,
+          changeOrigin: false,
         },
         '/hubs': {
           target: apiUpstream,
-          changeOrigin: true,
+          changeOrigin: false,
           ws: true,
+        },
+        '/signin-oidc': {
+          target: apiUpstream,
+          changeOrigin: false,
+        },
+        '/signout-callback-oidc': {
+          target: apiUpstream,
+          changeOrigin: false,
         },
       },
     },

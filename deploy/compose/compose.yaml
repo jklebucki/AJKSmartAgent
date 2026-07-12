@@ -120,6 +120,7 @@ services:
       - start-dev
       - --http-port=8080
       - --http-management-port=9000
+      - --import-realm
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/${KEYCLOAK_DB_NAME:-keycloak}
@@ -141,6 +142,8 @@ services:
         condition: service_healthy
     tmpfs:
       - /tmp
+    volumes:
+      - ./keycloak/realm-praxiara.json:/opt/keycloak/data/import/realm-praxiara.json:ro
     healthcheck:
       test:
         - CMD
@@ -157,6 +160,31 @@ services:
     networks:
       - backend
       - gateway
+
+  keycloak-init:
+    <<: *service-defaults
+    profiles:
+      - identity
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION:?Set KEYCLOAK_VERSION in versions.env}
+    entrypoint:
+      - /bin/sh
+      - /opt/praxiara/keycloak-init.sh
+    environment:
+      KEYCLOAK_URL: http://keycloak:8080/auth
+      KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME:-admin}
+      KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD:?Set KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD in .env}
+      PRAXIARA_SEED_ADMIN_USERNAME: ${PRAXIARA_SEED_ADMIN_USERNAME:?Set PRAXIARA_SEED_ADMIN_USERNAME in .env}
+      PRAXIARA_SEED_ADMIN_PASSWORD_FILE: /run/secrets/praxiara_seed_admin_password
+    volumes:
+      - ./keycloak/keycloak-init.sh:/opt/praxiara/keycloak-init.sh:ro
+    secrets:
+      - praxiara_seed_admin_password
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    restart: "no"
+    networks:
+      - backend
 
   temporal:
     <<: *service-defaults
@@ -413,6 +441,10 @@ volumes:
   mailpit-data:
   caddy-data:
   caddy-config:
+
+secrets:
+  praxiara_seed_admin_password:
+    file: ${PRAXIARA_SEED_ADMIN_PASSWORD_FILE:?Set PRAXIARA_SEED_ADMIN_PASSWORD_FILE in .env}
 
 networks:
   backend:

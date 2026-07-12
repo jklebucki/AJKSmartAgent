@@ -50,7 +50,7 @@ docker compose \
 
 | Profil | Stan | Usługi | Zastosowanie |
 |---|---|---|---|
-| `identity` | istnieje | `keycloak` | lokalny OIDC; oauth2-proxy jest rozszerzeniem docelowym |
+| `identity` | istnieje | `keycloak`, `keycloak-init` | lokalny OIDC i idempotentny seed administratora |
 | `workflow` | istnieje | `temporal`, `temporal-ui` | trwałe zadania, approval i retry |
 | `llm-local` | istnieje | `ollama` | lokalna inferencja developerska |
 | `observability-lite` | istnieje | OTel Collector, Prometheus, Jaeger | lokalny debug o małym koszcie |

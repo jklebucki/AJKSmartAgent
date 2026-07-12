@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
+using Praxiara.Api.Auth;
 using Praxiara.Api.Hubs;
 using Praxiara.Api.Ifs;
 using Praxiara.Api.Security;
@@ -14,11 +15,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.Services.AddOpenApi();
-builder.Services
-    .AddAuthentication(DenyAllAuthenticationHandler.SchemeName)
-    .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, DenyAllAuthenticationHandler>(
-        DenyAllAuthenticationHandler.SchemeName,
-        _ => { });
+builder.Services.AddPraxiaraAuthentication(builder.Configuration);
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
+    options.Cookie.Name = "praxiara-antiforgery";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+});
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(
@@ -61,8 +66,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAntiforgery();
 app.MapDefaultEndpoints();
 app.MapHub<TaskEventsHub>("/hubs/tasks");
+app.MapAuthenticationEndpoints();
 app.MapIfsEnvironmentEndpoints();
 app.MapGet("/api/v1/system/info", () => new SystemInfoResponse(
         "Praxiara Control Plane",

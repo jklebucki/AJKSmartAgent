@@ -26,6 +26,14 @@
 		reverse_proxy {$PRAXIARA_API_UPSTREAM}
 	}
 
+	handle /signin-oidc {
+		reverse_proxy {$PRAXIARA_API_UPSTREAM}
+	}
+
+	handle /signout-callback-oidc {
+		reverse_proxy {$PRAXIARA_API_UPSTREAM}
+	}
+
 	handle {
 		reverse_proxy {$PRAXIARA_WEB_UPSTREAM}
 	}

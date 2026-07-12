@@ -158,7 +158,7 @@ export function IfsEndpointManagementPage() {
         <section className="panel" aria-labelledby="ifs-environment-list-title">
           <h3 id="ifs-environment-list-title">{t('ifsManagement.configured')}</h3>
           {environmentsQuery.isLoading && <p className="hint">{t('ifsEnvironments.loading')}</p>}
-          {environmentsQuery.isError && <p className="hint" role="status">{t('ifsEnvironments.unavailable')}</p>}
+          {environmentsQuery.isError && <p className="hint" role="status">{t('ifsEnvironments.unavailable')} <a href="/api/v1/auth/login?returnUrl=/ifs-endpoints">{t('authentication.login')}</a></p>}
           {environmentsQuery.data?.length === 0 && <p className="hint">{t('ifsEnvironments.empty')}</p>}
           <ul className="endpoint-list">
             {environmentsQuery.data?.map((environment) => (

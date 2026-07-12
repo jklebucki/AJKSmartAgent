@@ -137,6 +137,10 @@ Authentication__RequireHttpsMetadata=true
 Authentication__ClockSkewSeconds=30
 ```
 
+API obsługuje oba kontrolowane sposoby dostępu: sesję OIDC BFF dla React oraz access token Bearer dla klienta API. W pierwszym wariancie React nie otrzymuje tokenu — API zapisuje wyłącznie cookie `HttpOnly`, a żądania zmieniające stan wymagają nagłówka `X-CSRF-TOKEN` pobranego z `/api/v1/auth/antiforgery`. W drugim wariancie API waliduje issuer, audience `praxiara-api` i role realm Keycloak po stronie serwera.
+
+Lokalny realm jest importowany z `deploy/compose/keycloak/realm-praxiara.json`. Po uruchomieniu profilu `identity` job `keycloak-init` idempotentnie tworzy użytkownika wskazany przez `PRAXIARA_SEED_ADMIN_USERNAME` i przypisuje mu wyłącznie rolę `praxiara-admin`. Hasło odczytuje wyłącznie z pliku wskazanego przez `PRAXIARA_SEED_ADMIN_PASSWORD_FILE`; nie wpisuj go do Git ani do pliku realm. Istniejącemu użytkownikowi job nie zmienia hasła.
+
 Konfiguracja Keycloak obejmuje hostname, proxy headers, health/metrics i połączenie z dedykowaną bazą. Sekret DB jest odczytywany z pliku lub dostarczany dynamicznie.
 
 ## Sieci i porty
@@ -157,7 +161,7 @@ docker compose \
   -f deploy/compose/compose.yaml \
   -f deploy/compose/compose.dev.yaml \
   --profile identity \
-  up -d --wait keycloak oauth2-proxy
+  up -d --wait keycloak keycloak-init
 ```
 
 Idempotentny realm init:

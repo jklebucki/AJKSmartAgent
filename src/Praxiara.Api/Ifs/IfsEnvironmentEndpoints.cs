@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,13 +25,16 @@ public static class IfsEnvironmentEndpoints
             .RequireAuthorization(IfsAuthorizationPolicies.EnvironmentRead);
         group.MapPost("", CreateAsync)
             .WithName("CreateIfsEnvironment")
-            .RequireAuthorization(IfsAuthorizationPolicies.EnvironmentWrite);
+            .RequireAuthorization(IfsAuthorizationPolicies.EnvironmentWrite)
+            .WithMetadata(new RequireAntiforgeryTokenAttribute(true));
         group.MapPut("/{environmentId}", UpdateAsync)
             .WithName("UpdateIfsEnvironment")
-            .RequireAuthorization(IfsAuthorizationPolicies.EnvironmentWrite);
+            .RequireAuthorization(IfsAuthorizationPolicies.EnvironmentWrite)
+            .WithMetadata(new RequireAntiforgeryTokenAttribute(true));
         group.MapDelete("/{environmentId}", DeleteAsync)
             .WithName("DeleteIfsEnvironment")
-            .RequireAuthorization(IfsAuthorizationPolicies.EnvironmentWrite);
+            .RequireAuthorization(IfsAuthorizationPolicies.EnvironmentWrite)
+            .WithMetadata(new RequireAntiforgeryTokenAttribute(true));
         group.MapGet("/{environmentId}/projections/{projectionName}/metadata", ReadMetadataAsync)
             .WithName("GetIfsProjectionMetadata")
             .RequireAuthorization(IfsAuthorizationPolicies.EnvironmentRead);

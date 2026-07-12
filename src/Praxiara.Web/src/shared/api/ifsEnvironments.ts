@@ -38,10 +38,11 @@ export async function getIfsEnvironments(): Promise<IfsEnvironment[]> {
 }
 
 export async function createIfsEnvironment(input: IfsEnvironmentInput): Promise<IfsEnvironment> {
+  const antiforgeryToken = await getAntiforgeryToken()
   const response = await fetch('/api/v1/ifs/environments', {
     method: 'POST',
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': antiforgeryToken },
     body: JSON.stringify(input),
   })
 
@@ -49,10 +50,11 @@ export async function createIfsEnvironment(input: IfsEnvironmentInput): Promise<
 }
 
 export async function updateIfsEnvironment(id: string, input: Omit<IfsEnvironmentInput, 'id'>): Promise<IfsEnvironment> {
+  const antiforgeryToken = await getAntiforgeryToken()
   const response = await fetch(`/api/v1/ifs/environments/${encodeURIComponent(id)}`, {
     method: 'PUT',
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': antiforgeryToken },
     body: JSON.stringify(input),
   })
 
@@ -60,9 +62,11 @@ export async function updateIfsEnvironment(id: string, input: Omit<IfsEnvironmen
 }
 
 export async function deleteIfsEnvironment(id: string): Promise<void> {
+  const antiforgeryToken = await getAntiforgeryToken()
   const response = await fetch(`/api/v1/ifs/environments/${encodeURIComponent(id)}`, {
     method: 'DELETE',
     credentials: 'include',
+    headers: { 'X-CSRF-TOKEN': antiforgeryToken },
   })
   if (!response.ok) {
     throw new Error(`IFS_ENVIRONMENT_DELETE_${response.status}`)
@@ -87,4 +91,13 @@ async function parseIfsEnvironmentResponse(response: Response, errorPrefix: stri
   }
 
   return ifsEnvironmentSchema.parse(await response.json())
+}
+
+async function getAntiforgeryToken(): Promise<string> {
+  const response = await fetch('/api/v1/auth/antiforgery', { credentials: 'include' })
+  if (!response.ok) {
+    throw new Error(`PRAXIARA_AUTH_${response.status}`)
+  }
+
+  return z.object({ requestToken: z.string().min(1) }).parse(await response.json()).requestToken
 }

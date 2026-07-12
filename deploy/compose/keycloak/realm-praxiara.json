@@ -1,0 +1,58 @@
+{
+  "realm": "praxiara",
+  "enabled": true,
+  "displayName": "Praxiara",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "roles": {
+    "realm": [
+      { "name": "praxiara-user" },
+      { "name": "praxiara-skill-author" },
+      { "name": "praxiara-approver" },
+      { "name": "praxiara-auditor" },
+      { "name": "praxiara-operator" },
+      { "name": "praxiara-admin" }
+    ]
+  },
+  "clientScopes": [
+    {
+      "name": "praxiara-api-audience",
+      "protocol": "openid-connect",
+      "protocolMappers": [
+        {
+          "name": "praxiara-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "praxiara-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "praxiara-web",
+      "name": "Praxiara Web",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "redirectUris": ["http://localhost:5173/*", "http://localhost:8080/*"],
+      "webOrigins": ["http://localhost:5173", "http://localhost:8080"],
+      "attributes": { "pkce.code.challenge.method": "S256" },
+      "defaultClientScopes": ["web-origins", "acr", "roles", "profile", "email", "praxiara-api-audience"]
+    },
+    {
+      "clientId": "praxiara-api",
+      "name": "Praxiara API audience",
+      "enabled": true,
+      "bearerOnly": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false
+    }
+  ]
+}

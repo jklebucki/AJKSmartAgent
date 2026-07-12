@@ -10,7 +10,7 @@ W repozytorium wolno używać wyłącznie komponentów bezpłatnych w zastosowan
 
 | Grupa | Licencja |
 |---|---|
-| .NET, ASP.NET Core, Aspire, Microsoft.Extensions.AI, EF Core | MIT |
+| .NET, ASP.NET Core, Aspire, Microsoft.Extensions.AI, EF Core, Microsoft.AspNetCore.Authentication.JwtBearer, Microsoft.AspNetCore.Authentication.OpenIdConnect | MIT |
 | Microsoft.Extensions.Http 10.0.9 | MIT |
 | Microsoft.Playwright | MIT |
 | OpenTelemetry | Apache-2.0 |
