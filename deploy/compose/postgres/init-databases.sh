@@ -5,8 +5,13 @@ validate_identifier() {
   value="$1"
   label="$2"
 
-  if ! printf '%s' "$value" | grep -Eq '^[A-Za-z_][A-Za-z0-9_]*$'; then
-    echo "$label must be a valid PostgreSQL identifier." >&2
+  if [ -z "$value" ]; then
+    echo "$label must not be empty." >&2
+    exit 1
+  fi
+
+  if printf '%s' "$value" | LC_ALL=C grep -q '[[:cntrl:]]'; then
+    echo "$label must not contain control characters." >&2
     exit 1
   fi
 }
